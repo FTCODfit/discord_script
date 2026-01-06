@@ -85,16 +85,18 @@ class DiscordClient:
         payload_json = {"content": message or ""}
         files = {}
         attachment_handle = []
-        for idx, path in enumerate(attachment_path):
-            attachment = open(path, "rb")
-            files[f"files[{idx}]"] = (os.path.basename(path), attachment)
-            attachment_handle.append(attachment)
-        files["payload_json"] = (None, json.dumps(payload_json), "application/json")
-
-        response = requests.post(url, headers=self._HEADERS, files=files)
-        
-        for file in attachment_handle:
-            file.close()
+        try:
+            for idx, path in enumerate(attachment_path):
+                attachment = open(path, "rb")
+                files[f"files[{idx}]"] = (os.path.basename(path), attachment)
+                attachment_handle.append(attachment)
+            files["payload_json"] = (None, json.dumps(payload_json), "application/json")
+            
+            response = requests.post(url, headers=self._HEADERS, files=files)
+        except Exception as e: print(e)
+        finally:
+            for file in attachment_handle:
+                file.close()
 
     
     
